@@ -13,7 +13,7 @@ import streamlit as st
 # update app.py without updating the inner ithaca_quant/ package; previously
 # this caused an opaque ImportError before the dashboard could show guidance.
 from ithaca_quant import __version__
-APP_RELEASE = "2.4.0"
+APP_RELEASE = "2.3.0"
 st.set_page_config(page_title=f"Ithaca Quant v{APP_RELEASE}", page_icon="📈", layout="wide")
 if __version__ != APP_RELEASE:
     st.error(
