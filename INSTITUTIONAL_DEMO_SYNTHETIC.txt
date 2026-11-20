@@ -1,9 +1,0 @@
-SYNTHETIC DEMONSTRATION ONLY — NOT A LIVE BACKTEST OR ACCURACY CLAIM
-Cross-sectional ranking signal test (constructed statistical relationship):
-Independent dates: 20 | ticker outcomes: 400
-Mean Spearman IC: +0.211
-Top vs average excess: +0.78%
-Date-block 95% interval: +0.29% to +1.31%
-Next-close price proxy windows: 80 | mean delayed stock return: +0.92%
-Data quality symbols with flags: 0 / 21
-LIMITS: synthetic data; constructed outcomes; price-proxy is not executable; survivorship unresolved.
