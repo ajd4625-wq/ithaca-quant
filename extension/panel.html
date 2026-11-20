@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ithaca Quant Research</title><link rel="stylesheet" href="panel.css"></head><body>
+<div class="shell">
+  <div class="header"><span class="logo-icon">◈</span><div><b>ITHACA QUANT</b><small>STOCK RESEARCH COMPANION · v0.6 / v3.2 ANALYST + PORTFOLIO + 3 FITTED ML MODELS</small></div><span class="state">LOCAL</span></div>
+  <div class="notice">Research, not automatic trading. Prices reflect <b>completed daily closes</b>, not guaranteed live quotes.</div>
+  <div class="toolbar"><label class="check"><input type="checkbox" id="monitor"><span>Monitor supported stock pages</span></label><label class="check"><input type="checkbox" id="overlay"><span>Floating overlay</span></label></div>
+  <div class="search"><input id="ticker" maxlength="12" placeholder="Enter ticker (e.g. RKLB)" autocomplete="off" aria-label="Ticker"><button id="analyze">Analyze</button></div>
+  <div class="source" id="source">Open a supported stock page or enter a ticker.</div>
+  <div class="status" id="status" role="status">Start the local Python bridge to analyze market data.</div>
+  <section id="result" hidden>
+    <div class="heading"><div><span class="eyebrow">RESEARCH SIGNAL</span><h1 id="symbol">—</h1></div><div class="value" id="price">—</div></div>
+    <div class="signal-card"><div class="signal-name" id="signal">—</div><p id="reason">—</p><div class="signal-strength" id="strength">—</div></div>
+    <div class="grid-three"><div class="metric"><small>FORECAST ML (55%)</small><b id="forecast-score">—</b></div><div class="metric"><small>MOMENTUM ML (15%)</small><b id="momentum-score">—</b></div><div class="metric"><small>DOWNSIDE ML (30%)</small><b id="risk-score">—</b></div></div>
+    <section class="detail validation"><div class="subhead">Model evidence &amp; independence <small>Chronological holdout</small></div>
+      <p id="validation">Not evaluated yet.</p><div id="agent-detail"></div>
+      <p>Three separately trained ML learners, not three autonomous language agents. They share price data, so their errors may be correlated. No verified live accuracy until future outcomes mature.</p>
+    </section>
+    <section class="detail"><div class="subhead">Forecast versus SPY <small>Next 5 trading sessions</small></div><div id="outlook" class="important">—</div><p id="forecast-note">—</p></section>
+    <section class="detail"><div class="subhead">Entry confirmation checks</div><ul id="entry"></ul></section>
+    <section class="detail"><div class="subhead">Exit and invalidation warnings</div><ul id="exit"></ul></section>
+    <section class="detail"><div class="subhead">52-week price context</div><p id="range">—</p></section>
+    <section class="detail researchlab"><div class="subhead">v3.2 advanced return-model zoo <small>Only when requested</small></div>
+     <p>Three independently fitted agents power normal monitoring. Compare additional v3.2 models with chronologically purged selection and held-out error diagnostics. This analysis does not overwrite the weekly ledger.</p>
+     <div class="report-actions"><button id="run-lab" class="soft">Run deep model comparison</button><button id="catalog" class="soft">Model catalog</button></div>
+     <div id="lab-result" class="expanded-result" role="status">Not run yet. Larger comparisons may take longer.</div>
+  </section>
+  <section class="detail"><div class="subhead">Independent cross-stock rank contest <small>Research only</small></div>
+     <p>Experimental survivor-biased comparison of 10+ currently selected stocks. A full point-in-time test requires delisted securities and delisting-aware returns; no automatic promotion is permitted.</p>
+     <label class="check extra"><input type="checkbox" id="optional-rank"><span>Include optional LightGBM / XGBoost (slower)</span></label>
+     <div class="report-actions"><button id="run-ranks" class="soft">Compare ranking models</button><button id="check-ranks" class="soft">Show status</button></div>
+     <div id="rank-result" class="expanded-result" role="status">No ranking contest run yet.</div>
+  </section>
+  <section class="detail"><div class="subhead">SEC Form 4 insider filings <small>Disclosed transactions</small></div>
+     <p>Look up publicly disclosed insider purchases and sales. This does not provide undisclosed or advance information, nor change the forecast.</p>
+     <button id="insiders" class="soft">Load public insider activity</button>
+     <div id="insider-result" class="expanded-result" role="status">SEC contact configuration required for live filings.</div>
+  </section>
+  <section class="detail analyst-research"><div class="subhead">Wall Street analyst intelligence <small>v3.2 · on demand</small></div>
+    <p>Third-party rating counts, price-target estimates, and dated firm actions. Analyst targets are <b>not</b> five-session AI forecasts. No price-target upside is computed from adjusted historical prices.</p>
+    <label for="analyst-provider">Analyst data provider</label>
+    <select id="analyst-provider"><option value="yahoo">Yahoo Finance (best effort)</option><option value="finnhub">Finnhub (backend API key required)</option></select>
+    <div class="report-actions"><button id="load-analysts" class="soft">Check analysts for this stock</button></div>
+    <div id="analyst-result" class="expanded-result" role="status">No analyst research requested.</div>
+  </section>
+  <section class="detail"><div class="subhead">News · distinct events</div><p id="newsstatus">—</p><div id="news"></div></section>
+    <p class="footnote" id="freshness">—</p>
+  </section>
+  <section class="detail portfolio-research">
+    <div class="subhead">My portfolio · analyst &amp; risk study <small>v3.2 · opt-in</small></div>
+    <p>Enter currently held symbols, share counts, and optionally your latest <b>unadjusted</b> price per share. One holding per line: <code>AAPL,10,250.00</code> or <code>MSFT,5</code>. If price is omitted, the backend tries Yahoo intraday quotes. Maximum 20 positions.</p>
+    <label for="holdings-input">Your virtual holdings (saved in Chrome locally only)</label>
+    <textarea id="holdings-input" rows="4" spellcheck="false" placeholder="AAPL,10,250.00
+MSFT,5
+NVDA,8"></textarea>
+    <div class="two-inputs">
+      <label>Illustrative cash reserve (%)<input id="cash-reserve" type="number" min="0" max="95" step="5" value="10"></label>
+      <label>Maximum stock weight (%)<input id="position-cap" type="number" min="5" max="100" step="5" value="20"></label>
+    </div>
+    <p class="footnote">With fewer stocks than required to fill the cap, unallocated cash can exceed the requested reserve. If prices or complete return histories are missing, the optimizer will not produce weights.</p>
+    <div class="report-actions"><button id="save-holdings" class="soft">Save holdings locally</button><button id="run-portfolio">Research my portfolio</button><button id="export-portfolio" class="soft" disabled>Export CSV</button></div>
+    <div id="portfolio-status" class="expanded-result" role="status">No portfolio research run. Your holdings are not sent anywhere until you click “Research my portfolio.”</div>
+  </section>
+  <section class="detail integrity"><div class="subhead">v3.2 Historical Data Integrity <small>Source-declared, not independently certified</small></div>
+    <p>Normal Yahoo browsing is still research-grade. A separate point-in-time historical archive can preserve security IDs, dated membership, raw and adjusted closes, original filing vintages, and documented terminal payouts. The source-code ZIP is not a market dataset.</p>
+    <div class="report-actions"><button id="refresh-integrity" class="soft">Check archive &amp; feed</button><button id="run-archive-audit" class="soft" disabled>Audit archived market history</button></div>
+    <div id="integrity-status" class="expanded-result" role="status">Loading archive status…</div>
+    <div id="audit-status" class="expanded-result" role="status">Historical audit has not been run.</div>
+  </section>
+  <section class="detail weekly"><div class="subhead">Weekly forward accuracy ledger <small>Three independently fitted models · separate v3.2 record</small></div><div id="weekly">Loading weekly audit…</div><div class="report-actions"><button id="refresh-report" class="soft">Refresh report</button><button id="open-report" class="soft">Full report</button><button id="export-csv" class="soft">CSV ledger</button></div></section>
+  <section class="detail"><div class="subhead">Visible tab screenshot <small>only on click</small></div><p>This is a private screenshot preview, <b>not AI visual interpretation</b>.</p><button id="capture" class="soft">Capture visible tab</button><div id="preview"></div></section>
+  <footer>Exactly 3 fitted ML research agents · 2 provider retries per operation · no broker access · opt-in monitoring only</footer>
+</div><script src="tickers.js"></script><script src="panel.js"></script></body></html>
