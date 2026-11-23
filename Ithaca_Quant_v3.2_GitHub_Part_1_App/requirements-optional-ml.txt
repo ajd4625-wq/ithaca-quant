@@ -1,8 +1,0 @@
-# Optional accelerated candidate models. The app works without these.
-# Only install where computing resources and provider terms permit.
-lightgbm>=4,<5
-xgboost>=2,<4
-catboost>=1.2,<2
-
-# Optional auditable boosting (only when explicitly requested in the research lab)
-interpret-core>=0.6,<1
