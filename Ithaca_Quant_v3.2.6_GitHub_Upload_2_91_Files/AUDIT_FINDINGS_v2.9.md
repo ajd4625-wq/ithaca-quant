@@ -1,0 +1,44 @@
+# Accuracy and reliability audit — Ithaca Quant v2.9.0
+
+**Source inspected:** user-provided v2.8 application. **Output:** revised source and tests in this distribution. No authenticated historical delisted-stock dataset or matured third-party forward ledger was provided; this is a code-and-synthetic-tests audit, not proof of predictive superiority.
+
+## Confirmed defects or important reliability weaknesses repaired
+
+| Area | Finding | Implemented correction | Verification / residual limitation |
+|---|---|---|---|
+| Model independence | Original 3 “agents” were percentiles of the same model output, momentum and volatility | Added separately trained Ridge, Gradient Boosting and Random Forest with a model-level prediction, conflict spread and winner **for every stock** | Per-stock model outputs differ; a candidate must pass chronologically separate selection and untouched audit windows. The previous heuristic scores remain distinguishable and for comparison only |
+| Unfounded winner promotion | Selecting an apparent winning model on the same test results inflates accuracy | Winning contender chosen on first purged block, audited on second; minimum 8 nonoverlapping mature sessions in each; need ≥3% improved MAE vs calibrated baseline on both | Synthetic case confirms champions can actually win; weak challengers leave incumbent forecasts unchanged. Numerous per-stock comparisons still imply selection risk |
+| Feature mismatch | A price-only challenger could otherwise replace an incumbent with properly dated SEC/news/earnings predictors | Prevented promotion unless the baseline was the same base technical-feature model; otherwise winner is a research-sidecar only | Rigid conservative policy; a future release could compare richer challengers fairly with a fully historical feature-selection pipeline |
+| Current-listing survivorship bias | Historical test drew candidates only from present-day listed/watchlist stocks | Strict archived, dated-membership source option; missing eligible tickers or delisted outcome data fail closed; default test prominently marked **unverified** | A real archival constituent/delisted-return source was **not** supplied; cannot fabricate such data. `provenance` declaration cannot authenticate an archive |
+| Missing quote fabrication | Loader forward-filled missing and potentially delisted tickers for two sessions, manufacturing returns and understating missing data | Missing daily quotes stay NaN; model features can only use actual supplied prices | Vendor adjustments and historical ticker identity still need external verification |
+| Stale scheduled predictions | Daily logger permitted a previous-session observation within a 3-calendar-day allowance | Only accept a completed bar dated today in New York on a scheduled trading weekday | Holidays/provider delays intentionally skip recording rather than backfill |
+| Price look-ahead | The Yahoo loader retroactively marked outlier bar `t` missing after seeing day `t+1` reversal | Removed use of reversal-based masking in the historical loader | Diagnostic helper retained but not used when preparing historical model features |
+| Impossible backtest execution price | The model used the close to forecast and also assumed entry at that same close | Backtest portfolio entry now uses next-session adjusted close, with missing fills leaving cash uninvested | An adjusted next-close proxy is not executable bid/ask and cannot model real slippage or partial fills |
+| Incomplete daily candle | Scheduled daily job fetched prices directly without calling the completed-session filter | Scheduled job now drops unfinished U.S. daily candles before forecasting | Provider errors/revisions are not eliminated; incomplete bars can exist even after close |
+| Backfilled evidence | Recorded model forecasts and outcomes could be displayed as “forward” even if logged after the next session | Added timestamp eligibility migration and checks against actual signal/next-session Eastern market close; qualified score excludes late/unverifiable rows | Timestamp eligibility alone is not a cryptographically authenticated third-party evidence chain |
+| Weekly report contamination | Old or backfilled outcomes could enter current weekly headline metrics | Weekly scoreboard excludes late/unverifiable forecasts; MAE baselines use the same eligible subset | Status still preliminary; small, correlated samples cannot establish trading edge |
+| Leaderboard-only ledger sampling | Recording only top 250 optimistic forecasts can bias reported accuracy | If capped, select across the full sorted prediction distribution | User-selected universe still causes sampling/selection bias; sample is not market-representative |
+| Concurrent worker race | Cloud storage used SELECT-then-INSERT, vulnerable to duplicate simultaneous forecasts | PostgreSQL/SQLite atomic insert with unique-key conflict-ignore; first write remains immutable | Persistent database/server secrets and independent audit controls remain operator responsibility |
+| Obsolete automation directory detection | Both v2.8 daily and weekly GitHub jobs hardcoded a search for a v2.7 version string; a 2.9 deployment would not be found | Require complete repository-root deployment and remove version-based folder search | Jobs only run when the user commits the full folder and configures cloud secrets; not deployed here |
+| Schedule/data cutoff mismatch | Daily job ran at 4:30 PM ET but the completed-bar filter excluded today's price until 5 PM | Shift daily to 5:20 PM ET and Friday reconciliation to 5:45 PM ET; report end moved to 6 PM ET | Provider publication can be late; schedule execution is best effort |
+| Incomplete scoreboard reconciliation | Worker reconciled only first 150 symbols but ledger can cover more | Reconcile all tracked symbols in batches with completed-bar filter; disclose unavailable batches | Individual missing quotes still leave outcomes unresolved |
+| Broken market-refresh workflow | Workflow changed into inner package folder without scripts or requirements | Run install and scheduled refresh in repository root | Requires configured persistent cloud backend |
+| Invalid validation inputs | Negative modeled transaction costs or zero backtest windows could be accepted | Added positive horizon/window counts and nonnegative cost guardrails | Assumed costs remain illustrative, not measured trade fills |
+
+## Testing performed
+
+- Python package compilation and full pytest regression suite.
+- Synthetic stock data cases for rejecting weak challengers, accepting stronger linear challengers, preserving forecasts on fallback, avoiding audit selection look-ahead, and checking next-day bad-tick treatment.
+- Point-in-time historical membership validation fails on current-day membership and missing delisted tickers.
+- Local SQLite immutable ledger tests, timestamp-qualified vs late outcomes, stratified forecast logging and optional SQLAlchemy SQLite backend atomic insertion smoke test.
+- **No verified real-world forecasting accuracy percentage can be reported from these tests.** No full browser/cloud deployment, brokerage execution, or live data provider integration was measured.
+
+## Still unverified / externally blocked
+
+1. **True historical-universe unbiased returns:** requires archived all-listed constituent snapshots and actual delisted-stock adjusted total returns, including bad-data/ticker-change handling. The app now refuses to certify such a result without inputs, but does not create them.
+2. **Genuine future forecast performance:** requires a long-running durable database, pre-close/after-close time audit, and many matured periods across market conditions. Current installed release has no independently verified live evaluation history.
+3. **Provider and infrastructure reliability:** Yahoo is an unofficial/delayed source; SEC/news feeds can be unavailable; live end-to-end provider accuracy, Cloud/Chrome deployment, and real alerts were not independently tested here.
+4. **Overfitting / multiple comparisons:** per-stock tournaments across many names and repeated experiments still require larger untouched future evidence, a locked preregistered challenge, and false discovery controls before claiming generalizable edge.
+5. **Trading performance:** adjusted next-close simulation is not real market fills. Execution costs, liquidity, spreads, slippage, taxes and delisting losses require dedicated datasets and execution assumptions.
+
+**Conclusion:** The confirmed software weaknesses above have concrete fixes and tests. This does **not** establish that all conceivable bugs in a large application have been found, nor does it establish superior live accuracy. The system now avoids several sources of **false** accuracy and only changes individual forecasts when the historical evidence gate is met.
